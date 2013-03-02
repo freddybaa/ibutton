@@ -1,0 +1,16 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package Ibutton.Result;
+
+/**
+ *
+ * @author Baardsen
+ */
+public interface ResultImpl {
+    double getTemperature();
+    String getDate();
+    String getDate(long miliseconds);
+}

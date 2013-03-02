@@ -1,0 +1,23 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package Gnuplot;
+
+import com.panayotis.gnuplot.JavaPlot;
+import com.panayotis.gnuplot.swing.JPlot;
+import com.panayotis.gnuplot.terminal.GNUPlotTerminal;
+import com.panayotis.gnuplot.terminal.ImageTerminal;
+
+/**
+ *
+ * @author Baardsen
+ */
+public class Main {
+    public static void main(String [] args){
+        
+        
+        
+    }
+}

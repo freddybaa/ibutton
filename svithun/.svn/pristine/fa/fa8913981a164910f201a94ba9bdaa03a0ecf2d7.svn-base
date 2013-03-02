@@ -1,0 +1,93 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package ibutton_;
+import com.dalsemi.onewire.adapter.DSPortAdapter;
+import com.dalsemi.onewire.container.*;
+/**
+ *
+ * @author Baardsen
+ */
+public class IbuttonContainer implements IbuttonContainerImplement{
+
+    private DSPortAdapter adapter;
+
+    private String alternateName = "";
+    private String description = "";
+    private String name = "";
+    private String port_name = "";
+
+    private HumidityContainer hc = null;
+    private TemperatureContainer tc = null;
+
+    private String container = "";
+    public IbuttonContainer(DSPortAdapter adapter, String port_name, String alternateNames, String description, String name, HumidityContainer hc ){
+        //adapter
+        this.adapter = adapter;
+
+
+        //port names and description
+        this.port_name = port_name;
+        this.alternateName = alternateNames;
+        this.description = description;
+        this.name = name;
+
+        //onewirecontainer
+        this.hc = hc;
+
+        this.container = "Humidity";
+    }
+
+     public IbuttonContainer(DSPortAdapter adapter, String port_name,String alternateNames, String description, String name, TemperatureContainer tc ){
+        //adapter
+        this.adapter = adapter;
+
+        //port names and description
+        this.alternateName = alternateNames;
+        this.description = description;
+        this.name = name;
+        this.port_name = port_name;
+
+        //onewirecontainer
+        this.tc = tc;
+
+        this.container = "Temperature";
+    }
+
+    public String getPortName(){
+        return this.port_name;
+    }
+    public DSPortAdapter getAdapter() {
+        return this.adapter;
+    }
+
+    public String getAlternateName() {
+        return this.alternateName;
+    }
+    
+    public HumidityContainer getHumidityContainer(){
+        return this.hc;
+    }
+    public TemperatureContainer getTemperatureContainer() {
+        return this.tc;
+    }
+
+    public String getDescription() {
+        return this.description;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    @Override
+    public String toString(){
+        String s=this.getAdapter().getAdapterName()+"\t"+this.getName()+"\t"+this.getPortName()+"\t"+this.getAlternateName()+"\t"+this.getDescription();
+        return s;
+
+    }
+
+
+}

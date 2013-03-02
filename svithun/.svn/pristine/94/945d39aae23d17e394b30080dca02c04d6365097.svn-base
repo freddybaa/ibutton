@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Form version="1.3" maxVersion="1.8" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
+  <Properties>
+    <Property name="defaultCloseOperation" type="int" value="2"/>
+    <Property name="title" type="java.lang.String" value="Create Mission"/>
+  </Properties>
+  <SyntheticProperties>
+    <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
+  </SyntheticProperties>
+  <AuxValues>
+    <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_generateFQN" type="java.lang.Boolean" value="true"/>
+    <AuxValue name="FormSettings_generateMnemonicsCode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_i18nAutoMode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_layoutCodeTarget" type="java.lang.Integer" value="1"/>
+    <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
+  </AuxValues>
+
+  <Layout>
+    <DimensionLayout dim="0">
+      <Group type="103" groupAlignment="0" attributes="0">
+          <Group type="102" alignment="0" attributes="0">
+              <Component id="newMissionPanel" min="-2" max="-2" attributes="0"/>
+              <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+          </Group>
+      </Group>
+    </DimensionLayout>
+    <DimensionLayout dim="1">
+      <Group type="103" groupAlignment="0" attributes="0">
+          <Group type="102" alignment="0" attributes="0">
+              <Component id="newMissionPanel" min="-2" max="-2" attributes="0"/>
+              <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+          </Group>
+      </Group>
+    </DimensionLayout>
+  </Layout>
+  <SubComponents>
+    <Container class="javax.swing.JPanel" name="newMissionPanel">
+
+      <Layout>
+        <DimensionLayout dim="0">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="102" attributes="0">
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="102" alignment="0" attributes="0">
+                          <Component id="humidAlarmHigh" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace min="-2" pref="62" max="-2" attributes="0"/>
+                          <Component id="newMissionHumidityAlarmHigh" max="32767" attributes="0"/>
+                      </Group>
+                      <Group type="102" attributes="0">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <Component id="humidAlarmLow" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace min="-2" pref="64" max="-2" attributes="0"/>
+                                      <Component id="newMissionHumidityAlarmLow" max="32767" attributes="0"/>
+                                  </Group>
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                          <Component id="sutaLabel" alignment="0" max="32767" attributes="0"/>
+                                          <Component id="newMissionLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                          <Component id="tempAlarmLowLabelNewMission" alignment="0" max="32767" attributes="0"/>
+                                          <Component id="tempAlarmHighLabelNewMission" alignment="0" max="32767" attributes="0"/>
+                                          <Component id="rolloverLabelNewMission" alignment="0" max="32767" attributes="0"/>
+                                          <Component id="delayStartLabelNewMission" alignment="0" max="32767" attributes="0"/>
+                                          <Component id="sampleRateLabelNewMission" alignment="0" min="-2" pref="151" max="-2" attributes="0"/>
+                                      </Group>
+                                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                          <Component id="rolloverCheck" max="32767" attributes="0"/>
+                                          <Component id="sutaCheck" max="32767" attributes="0"/>
+                                          <Component id="newMissionTempAlarmLow" alignment="0" max="32767" attributes="0"/>
+                                          <Component id="newMissionTempAlarmHigh" alignment="0" max="32767" attributes="0"/>
+                                          <Component id="newMissionDelayStart" alignment="0" max="32767" attributes="0"/>
+                                          <Component id="newMissionSampleRate" alignment="0" min="-2" pref="43" max="-2" attributes="0"/>
+                                      </Group>
+                                  </Group>
+                              </Group>
+                              <Group type="102" alignment="0" attributes="0">
+                                  <Component id="startNewMissionButton" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                                  <Component id="closeButton" min="-2" max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                          <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                      </Group>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+              </Group>
+          </Group>
+        </DimensionLayout>
+        <DimensionLayout dim="1">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="102" alignment="0" attributes="0">
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="newMissionLabel" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="sampleRateLabelNewMission" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="newMissionSampleRate" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="delayStartLabelNewMission" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="newMissionDelayStart" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="rolloverLabelNewMission" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="rolloverCheck" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="tempAlarmHighLabelNewMission" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="newMissionTempAlarmHigh" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="tempAlarmLowLabelNewMission" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="newMissionTempAlarmLow" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="sutaLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="sutaCheck" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="humidAlarmHigh" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="newMissionHumidityAlarmHigh" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="humidAlarmLow" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="newMissionHumidityAlarmLow" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="startNewMissionButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="closeButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace pref="13" max="32767" attributes="0"/>
+              </Group>
+          </Group>
+        </DimensionLayout>
+      </Layout>
+      <SubComponents>
+        <Component class="javax.swing.JLabel" name="sampleRateLabelNewMission">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Sample rate:"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="delayStartLabelNewMission">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Delay start:"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="rolloverLabelNewMission">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Rollover: "/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="tempAlarmHighLabelNewMission">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Temperature Alarm High:"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="tempAlarmLowLabelNewMission">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Temperature Alarm Low:"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="sutaLabel">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Start Upon Temperature Alarm:"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="newMissionLabel">
+          <Properties>
+            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+              <Font name="Tahoma" size="14" style="1"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Create New Mission"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="newMissionSampleRate">
+        </Component>
+        <Component class="javax.swing.JTextField" name="newMissionDelayStart">
+        </Component>
+        <Component class="javax.swing.JTextField" name="newMissionTempAlarmHigh">
+        </Component>
+        <Component class="javax.swing.JTextField" name="newMissionTempAlarmLow">
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="rolloverCheck">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Yes"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="sutaCheck">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Yes"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JButton" name="startNewMissionButton">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Start New Mission"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="startNewMissionButtonActionPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JLabel" name="humidAlarmHigh">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Humidity Alarm High:"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JLabel" name="humidAlarmLow">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Humidity Alarm Low:"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JTextField" name="newMissionHumidityAlarmHigh">
+        </Component>
+        <Component class="javax.swing.JTextField" name="newMissionHumidityAlarmLow">
+        </Component>
+        <Component class="javax.swing.JButton" name="closeButton">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Close"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="closeButtonActionPerformed"/>
+          </Events>
+        </Component>
+      </SubComponents>
+    </Container>
+  </SubComponents>
+</Form>

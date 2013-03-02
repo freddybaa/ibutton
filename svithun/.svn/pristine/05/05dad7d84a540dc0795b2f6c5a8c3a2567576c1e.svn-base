@@ -1,0 +1,97 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package GUI;
+
+import Ibutton.DeviceHandler.DeviceReader;
+import Ibutton.DeviceHandler.DeviceReader;
+import Ibutton.DeviceHandler.Hygrochron;
+import Ibutton.DeviceHandler.Thermochron;
+import com.dalsemi.onewire.OneWireException;
+import com.dalsemi.onewire.adapter.OneWireIOException;
+import com.dalsemi.onewire.container.OneWireContainer;
+import java.awt.Container;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+
+/**
+ *
+ * @author Baardsen
+ */
+public class Main_viewer extends JFrame{
+    private class MouseClickHandler implements ActionListener{
+        private Object owc;
+        public MouseClickHandler(Object owc){
+            this.owc = owc;
+        }
+        public void actionPerformed(ActionEvent e) {
+           
+                try {
+                    new Viewer(this.owc);
+                } catch (Exception ex) {
+                    Logger.getLogger(Main_viewer.class.getName()).log(Level.SEVERE, null, ex);
+                }
+        }
+
+    }
+    private static final int w = 400;
+    private static final int h = 300;
+    private Container container;
+    private MouseClickHandler mouseclickhandler;
+
+    /**
+     * Setting up the jframe and the gui
+     * @throws OneWireIOException
+     * @throws OneWireException
+     * @throws IOException
+     */
+    public Main_viewer() throws OneWireIOException, OneWireException, IOException{
+
+        container = getContentPane();
+        container.setLayout(new GridLayout(5,2));
+        makeForm();
+        setTitle("View running missions");
+        setSize(w, h);
+        setVisible(true);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+    }
+
+    private void makeForm() throws OneWireIOException, OneWireException, IOException{
+        JButton b;
+
+        DeviceReader dr = new DeviceReader();
+
+        for(OneWireContainer owc : dr.getDevices()){
+            if(owc.getAlternateNames().equals("Hygrochron")){
+                b = new JButton(owc.getAlternateNames());
+                mouseclickhandler = new MouseClickHandler(new Hygrochron(owc));
+                b.addActionListener(mouseclickhandler);
+                container.add(b);
+            }else{
+                 b = new JButton(owc.getAlternateNames());
+                 mouseclickhandler = new MouseClickHandler(new Thermochron(owc));
+                 b.addActionListener(mouseclickhandler);
+                container.add(b);
+            }
+        }
+    }
+
+    /**
+     * Main entry point to the program
+     * @param args
+     * @throws OneWireIOException
+     * @throws OneWireException
+     * @throws IOException
+     */
+    public static void main(String [] args) throws OneWireIOException, OneWireException, IOException{
+        Main_viewer m = new Main_viewer();
+    }
+}

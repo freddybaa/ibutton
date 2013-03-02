@@ -1,0 +1,230 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package Ibutton.DeviceHandler;
+
+
+import Ibutton.Result.TemperatureResult;
+import com.dalsemi.onewire.OneWireException;
+import com.dalsemi.onewire.container.OneWireContainer;
+import com.dalsemi.onewire.container.OneWireContainer41;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.TimeZone;
+
+/**
+ *
+ * @author Baardsen
+ */
+public abstract class Device implements Ibutton.Interface.Convert, IDevice{
+   
+    /**
+     * Container for Hydrochron and Thermochron
+     */
+    public OneWireContainer41 owc;
+
+    private String name;
+    private String alternateName;
+    private String description;
+    private String device_folder;
+    private String device_mission_folder;
+    private boolean rollover = false;
+    private DeviceData devdata;
+    /**
+     * Taking a OneWireContainer as parameter.
+     * @param con OneWireContainer
+     * @throws OneWireException
+     * @throws IOException
+     */
+    public Device(OneWireContainer con) throws OneWireException, IOException{
+        
+            owc = (OneWireContainer41)con;
+            this.name = owc.getName();
+            this.alternateName = owc.getAlternateNames();
+            this.description = owc.getDescription();
+            //setting up a new device folder for graphs/raw data for the device.
+            devdata = new DeviceData(owc.getAddressAsString(), alternateName);
+            this.device_mission_folder = devdata.makeDeviceFolder();
+            loadMission();
+            
+    }
+
+
+    /**
+     * Getting the mission information from the device
+     * @return String
+     * @throws OneWireException
+     */
+    public abstract String getMissionInformation() throws OneWireException;
+    /**
+     * Trying to read the temperatures from the device.
+     * @throws OneWireException
+     */
+    public abstract void readTemperatures() throws OneWireException;
+    /**
+     * Setting the alarm to go of when a high temperature is reached.
+     * @param alarmHigh Double
+     * @throws OneWireException
+     */
+    public abstract void setTemperatureAlarmHigh( double alarmHigh) throws OneWireException;
+    /**
+     * Setting the alarm to go of when a low temperature is reached.
+     * @param alarmLow Double
+     * @throws OneWireException
+     */
+    public abstract void setTemperatureAlarmLow(double alarmLow) throws OneWireException;
+    /**
+     * Returning all the temperatues found.
+     * @return ArrayList<Temperature>
+     */
+    public abstract ArrayList<TemperatureResult> getTemperatures();
+
+    /**
+     * Saving the current devices data to a text file to be used with generateGraph()
+     * @throws IOException
+     * @throws OneWireException
+     */
+    public abstract void saveData() throws IOException, OneWireException;
+
+    /**
+     * Generating a graph based on the data found in temp file.
+     *
+     * @throws Exception
+     */
+    public abstract void generateGraph() throws Exception;
+    /**
+     * Getting the adress 
+     * @return String
+     */
+    public String getAdress(){ return this.owc.getAddressAsString();}
+    /**
+     * Getting the device description
+     * @return String
+     */
+    public String getDescription(){ return this.description; }
+    /**
+     * Getting the device name
+     * @return String
+     */
+    public String getName(){ return this.name; }
+   /**
+    * Getting the device alternativename
+    * @return String
+    */
+    public String getAlternativeName(){ return this.alternateName; }
+    /**
+     * Returning the path to the mission folder
+     * @return String
+     */
+    public String getMissionFolder(){ return this.device_mission_folder; }
+    /**
+     * Converting the time in miliseconds to a date.
+     * @param miliseconds Long
+     * @return String
+     */
+
+    public int getMissionSampleRate() throws OneWireException{ return this.owc.getMissionSampleRate(0);}
+
+    public String convertDate(long miliseconds){
+        DateFormat format = new SimpleDateFormat("dd.MM.yyyy_HH:mm:ss");
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(miliseconds);
+        format.setTimeZone(TimeZone.getTimeZone("CET"));
+        return format.format(calendar.getTime());
+    }
+    /**
+      * Genereating file names for the given type
+      * @param name - File name
+      * @param extension - File extension. This has to be set accordingly to the GNUPLOTTERMINAL object.
+      * @return String with the new file name
+      * @throws OneWireException
+      */
+    public String generateFileName(String name, String extension) throws OneWireException{
+         return getMissionFolder()+"\\"+name+"_"+convertDate(owc.getMissionTimeStamp(0)).replace(":", "")+extension;
+     }
+
+    /**
+     * Delete everything on the device before starting a new mission
+     * @param state
+     */
+    public void setRollover(boolean state){
+        this.rollover = state;
+    }
+
+    /**
+     * Checks wether a mission is running on the device.
+     * @return boolean
+     * @throws OneWireException
+     */
+    public boolean isMissionRunning() throws OneWireException{
+        return owc.isMissionRunning();
+    }
+
+    /**
+     * Getting the current sample count on the device
+     * @return int
+     * @throws OneWireException
+     */
+    public int getSampleCount() throws OneWireException{
+        return owc.getMissionSampleCount(0);
+    }
+
+    /**
+     * Deleting everything stored on the device.
+     * @throws OneWireException
+     */
+    public void deleteMemory() throws OneWireException{
+        stopMission();
+        owc.clearMemory();
+        owc.clearMissionResults();
+    }
+    
+
+   
+    /**
+     * Setting up a new mission on the device.
+     * @param sampleRate
+     * @param startDelay
+     * @throws OneWireException
+     */
+    public void startMission(int sampleRate, int startDelay) throws OneWireException{
+        stopMission();
+        owc.startNewMission(sampleRate, startDelay, this.rollover, true, new boolean[]{true, true});
+        
+
+    }
+
+     public void startMissionOnTemperature(int sampleRate, int startDelay) throws OneWireException{
+        owc.setStartUponTemperatureAlarmEnable(true);
+        owc.startNewMission(sampleRate, startDelay, this.rollover, true, new boolean[]{true, true});
+    }
+
+    /**
+     * Stopping the current mission on the device
+     * @throws OneWireException
+     */
+    public void stopMission() throws OneWireException{
+        if(owc.isMissionRunning()){
+            owc.stopMission();
+        }
+    }
+
+    /**
+     * Loading the current mission the device.
+     * @throws OneWireException
+     */
+    public void loadMission() throws OneWireException{
+            //loading mission
+            boolean missonLoaded = false;
+            while(!missonLoaded){
+                owc.loadMissionResults();
+                missonLoaded = true;
+            }
+    }
+
+}

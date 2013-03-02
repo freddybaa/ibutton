@@ -1,0 +1,51 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package ibutton_;
+import com.dalsemi.onewire.adapter.DSPortAdapter;
+import com.dalsemi.onewire.container.*;
+/**
+ *
+ * @author Baardsen
+ */
+public class IbuttonHumidityContainer extends IbuttonContainer implements IbuttonContainerImplement{
+    
+
+    public IbuttonHumidityContainer(DSPortAdapter adapter, String port_name, String alternateNames, String description, String name, HumidityContainer hc ){
+        super(adapter, port_name,alternateNames, description, name, hc);
+
+    }
+    @Override
+    public String getPortName(){
+        return super.getPortName();
+    }
+    @Override
+    public DSPortAdapter getAdapter() {
+        return super.getAdapter();
+
+    }
+    @Override
+    public String getAlternateName() {
+        return super.getAlternateName();
+    }
+    @Override
+    public HumidityContainer getHumidityContainer() {
+        return super.getHumidityContainer();
+    }
+    @Override
+    public String getDescription() {
+        return super.getDescription();
+    }
+    @Override
+    public String getName() {
+        return super.getName();
+    }
+    @Override
+    public String toString(){
+        return super.toString();
+    }
+
+
+}

@@ -1,0 +1,111 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package Gnuplot.Plot;
+
+import Gnuplot.*;
+
+
+/**
+ * This is a class used to easily handle the plotting process in Gnuplot.
+ * It contains of four different contructors:
+ * 1. Plot multiple files without dateformat
+ * 2. Plot multiple files with dateformat
+ * 3. Plot single file without dateformat
+ * 4. Plot single file with dateformat
+ * @author Baardsen
+ */
+public class Plot {
+
+    //dateformat object
+    private GnuplotDateFormat dateformat = null;
+    //plotting string generated based on the chosen contructor
+    private String plotString = "";
+
+    //get methods
+    /**
+     * Method to get an instance of the dateformat
+     * @return
+     * Dateformat object
+     */
+    public GnuplotDateFormat getDateFormat(){ return this.dateformat; }
+    /**
+     * Method to get the plotstring
+     * @return
+     * String to plot
+     */
+    public String getPlotString(){ return this.plotString; }
+
+    /**
+     * Contructor to handle multiple files without dateformat
+     * @param files
+     * String [] with the filepath
+     * @param linesToUse
+     * String [] with the lines you want to use
+     * @param color
+     * String [] with the hex color to be used on the graph
+     * @param graphLabel
+     * String [] with labels to be display on each graph
+     */
+    public Plot(String [] files, String [] linesToUse, String [] color, String [] graphLabel){
+        this.plotString = "plot '"+files[0]+"' using "+linesToUse[0]+" title \""+graphLabel[0]+"\" with lines rgb \""+color[0]+"\"";
+        for(int i=1;i<files.length;i++){
+            this.plotString += ", '"+files[i]+"' using "+linesToUse[i]+" title \""+graphLabel[i]+"\" with lines rgb \""+color[i]+"\"";
+        }
+    }
+
+     /**
+     * Contructor to handle multiple files with dateformat
+     * @param files
+     * String [] with the filepath
+     * @param linesToUse
+     * String [] with the lines you want to use
+     * @param color
+     * String [] with the hex color to be used on the graph
+     * @param graphLabel
+     * String [] with labels to be display on each graph
+     * @param dateformat
+     * A GnuplotDateFormat object with the dateformat
+     */
+    public Plot(String [] files, String [] linesToUse, String [] color, String [] graphLabel, GnuplotDateFormat dateformat){
+        this.plotString = "plot '"+files[0]+"' using "+linesToUse[0]+" title \""+graphLabel[0]+"\" with lines rgb \""+color[0]+"\"";
+        for(int i=1;i<files.length;i++){
+            this.plotString += ", '"+files[i]+"' using "+linesToUse[i]+" title \""+graphLabel[i]+"\" with lines rgb \""+color[i]+"\"";
+        }
+        this.dateformat = dateformat;
+    }
+
+     /**
+     * Contructor to handle single file without dateformat
+      * @param file
+      * @param linesToUse
+     * String with the lines you want to use
+     * @param color
+     * String with the hex color to be used on the graph
+     * @param graphLabel
+     * String with labels to be display on each graph
+     */
+    public Plot(String file, String linesToUse, String  color, String graphLabel){
+        this.plotString = "plot '"+file+"' using "+linesToUse+" title \""+graphLabel+"\" with lines rgb \""+color+"\"";
+    }
+
+    /**
+     * Contructor to handle single file with dateformat
+     * @param file
+     * @param linesToUse
+     * String with the lines you want to use
+     * @param color
+     * String with the hex color to be used on the graph
+     * @param graphLabel
+     * String  with labels to be display on each graph
+     * @param dateformat
+     * A GnuplotDateFormat object with the dateformat
+     */
+    public Plot(String file, String linesToUse, String  color, String graphLabel, GnuplotDateFormat dateformat){
+        this.plotString = "plot '"+file+"' using "+linesToUse+" title \""+graphLabel+"\" with lines rgb \""+color+"\"";
+        this.dateformat = dateformat;
+    }
+ 
+}

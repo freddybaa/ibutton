@@ -1,0 +1,278 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package Ibutton;
+
+import com.dalsemi.onewire.OneWireAccessProvider;
+import com.dalsemi.onewire.OneWireException;
+import com.dalsemi.onewire.adapter.DSPortAdapter;
+import com.dalsemi.onewire.adapter.OneWireIOException;
+import com.dalsemi.onewire.container.ADContainer;
+import com.dalsemi.onewire.container.OneWireContainer;
+import com.dalsemi.onewire.container.OneWireContainer41;
+import com.dalsemi.onewire.container.TemperatureContainer;
+import com.dalsemi.onewire.utils.Convert;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+/**
+ *
+ * @author Baardsen
+ */
+public class Device {
+   
+    private OneWireContainer41 owc;
+
+    private ArrayList temperatures = new ArrayList();
+    private ArrayList humidity = new ArrayList();
+
+    private String name;
+    private String alternateName;
+
+    private boolean rollover = false;
+
+    private byte[] password = null;
+    
+
+    public Device(OneWireContainer con){
+        
+            owc = (OneWireContainer41)con;
+            this.name = owc.getName();
+            this.alternateName = owc.getAlternateNames();
+
+            
+    }
+
+    //getting the device name
+    public String getName(){ return this.name; }
+    //getting the device alternate name, such as Thermocron
+    public String getAlternateName(){ return this.alternateName; }
+    //getting temperatures stored on the device
+    public ArrayList getTemperatures(){ return this.temperatures; }
+    //getting humidty stored on the device
+    public ArrayList getHumidity(){ return this.humidity; }
+
+    /**
+     * Delete everything on the device before starting a new mission
+     * @param state
+     */
+    public void setRollover(boolean state){
+        this.rollover = state;
+    }
+
+
+    public void setPassword(String password) throws OneWireException{
+        stopMission();
+        this.password = Convert.toByteArray(password.length());
+    }
+    /**
+     * Checks wether a mission is running on the device.
+     * @return
+     * @throws OneWireException
+     */
+    public boolean isMissionRunning() throws OneWireException{
+        return owc.isMissionRunning();
+    }
+
+    /**
+     * Getting the current sample count on the device
+     * @return
+     * @throws OneWireException
+     */
+    public int getSampleCount() throws OneWireException{
+        return owc.getMissionSampleCount(0);
+    }
+
+    /**
+     * Deleting everything stored on the device.
+     * @throws OneWireException
+     */
+    public void deleteMemory() throws OneWireException{
+        owc.clearMemory();
+        owc.clearMissionResults();
+    }
+
+    /**
+     * Setting the humidity alarm for high values.
+     * @param alarmHigh
+     * @throws OneWireException
+     */
+    public void setHumidityAlarmHigh(double alarmHigh) throws OneWireException{
+        if(alarmHigh!=-1){
+            stopMission();
+            owc.setMissionAlarm(
+                                    OneWireContainer41.DATA_CHANNEL,
+                                    ADContainer.ALARM_HIGH,
+                                    alarmHigh);
+               owc.setMissionAlarmEnable(
+                                    OneWireContainer41.DATA_CHANNEL,
+                                    ADContainer.ALARM_HIGH,
+                                    true);
+        }else{
+            owc.setMissionAlarmEnable(
+                                    OneWireContainer41.DATA_CHANNEL,
+                                    ADContainer.ALARM_HIGH,
+                                    false);
+        }
+    }
+    public void setHumidityAlarmLow(double alarmLow) throws OneWireException{
+         if(alarmLow!=-1){
+             stopMission();
+            owc.setMissionAlarm(
+                                    OneWireContainer41.DATA_CHANNEL,
+                                    ADContainer.ALARM_LOW,
+                                    alarmLow);
+               owc.setMissionAlarmEnable(
+                                    OneWireContainer41.DATA_CHANNEL,
+                                    ADContainer.ALARM_LOW,
+                                    true);
+         }else{
+             owc.setMissionAlarmEnable(
+                                    OneWireContainer41.DATA_CHANNEL,
+                                    ADContainer.ALARM_LOW,
+                                    false);
+         }
+    }
+    /**
+     * Setting the temperature for high values.
+     * @param alarmHigh
+     * @throws OneWireException
+     */
+    public void setTemperatureAlarmHigh( double alarmHigh) throws OneWireException{
+        if(alarmHigh!=-1){
+            stopMission();
+             owc.setMissionAlarm(
+                                    OneWireContainer41.TEMPERATURE_CHANNEL,
+                                    TemperatureContainer.ALARM_HIGH,
+                                    alarmHigh);
+               owc.setMissionAlarmEnable(
+                                    OneWireContainer41.TEMPERATURE_CHANNEL,
+                                    TemperatureContainer.ALARM_HIGH,
+                                    true);
+        }else{
+            owc.setMissionAlarmEnable(
+                                    OneWireContainer41.TEMPERATURE_CHANNEL,
+                                    TemperatureContainer.ALARM_HIGH,
+                                    false);
+        }
+    }
+    /**
+     * Setting the temperature alarm for low values
+     * @param alarmLow
+     * @throws OneWireException
+     */
+    public void setTemperatureAlarmLow(double alarmLow) throws OneWireException{
+        if(alarmLow!=-1){
+            stopMission();
+            owc.setMissionAlarm(
+                                    OneWireContainer41.TEMPERATURE_CHANNEL,
+                                    TemperatureContainer.ALARM_LOW,
+                                    alarmLow);
+               owc.setMissionAlarmEnable(
+                                    OneWireContainer41.TEMPERATURE_CHANNEL,
+                                    TemperatureContainer.ALARM_LOW,
+                                    true);
+        }else{
+            owc.setMissionAlarmEnable(
+                                    OneWireContainer41.TEMPERATURE_CHANNEL,
+                                    TemperatureContainer.ALARM_LOW,
+                                    false);
+        }
+    }
+
+    /**
+     * Starting a new mission when the alarm temperatures are reached.
+     * @param alarmHigh
+     * @param alarmLow
+     * @throws OneWireException
+     */
+    public void startMissionUponTemperature(double alarmHigh, double alarmLow) throws OneWireException{
+        if(alarmHigh!=-1 && alarmLow !=-1){
+            owc.setStartUponTemperatureAlarmEnable(true);
+        }
+    }
+    /**
+     * Setting up a new mission on the device.
+     * @param sampleRate
+     * @param startDelay
+     * @throws OneWireException
+     */
+    public void startMission(int sampleRate, int startDelay) throws OneWireException{
+        stopMission();
+        owc.startNewMission(sampleRate, startDelay, this.rollover, true, new boolean[]{true, true});
+
+    }
+
+    /**
+     * Stopping the current mission on the device
+     * @throws OneWireException
+     */
+    public void stopMission() throws OneWireException{
+        if(owc.isMissionRunning()){
+            owc.stopMission();
+        }
+    }
+
+    /**
+     * Loading the current mission the device.
+     * @throws OneWireException
+     */
+    private void loadMission() throws OneWireException{
+            //loading mission
+            boolean missonLoaded = false;
+            while(!missonLoaded){
+                owc.loadMissionResults();
+                missonLoaded = true;
+            }
+    }
+
+    /**
+     * Reading all the temperatures readings on the device.
+     * @throws OneWireException
+     */
+    public void readTemperatures() throws OneWireException{
+        loadMission();
+        if(owc.getMissionChannelEnable(OneWireContainer41.DATA_CHANNEL)){
+
+             int sampleCount = owc.getMissionSampleCount(OneWireContainer41.TEMPERATURE_CHANNEL);
+             for(int i=0;i<sampleCount;i++){
+                  temperatures.add(owc.getMissionSample(OneWireContainer41.TEMPERATURE_CHANNEL, i));
+             }
+        }
+    }
+    /**
+     * Reading all the humidity readings on the device.
+     * @throws OneWireException
+     */
+    public void readHumidity() throws OneWireException{
+        loadMission();
+        if (owc.getMissionChannelEnable(OneWireContainer41.DATA_CHANNEL)) {
+            int sampleCount = owc.getMissionSampleCount(OneWireContainer41.DATA_CHANNEL);
+            for(int i=0;i<sampleCount;i++){
+                humidity.add(owc.getMissionSample(OneWireContainer41.DATA_CHANNEL, i));
+            }
+        }
+    }
+
+    /**
+     * Getting all the humidty and temperatures records stored on the device.
+     */
+    private void readDevice(){
+        try {
+            //loading mission
+            loadMission();
+            
+            if (owc.getMissionChannelEnable(OneWireContainer41.TEMPERATURE_CHANNEL)) {
+                readTemperatures();
+            }
+            if(owc.getMissionChannelEnable(OneWireContainer41.DATA_CHANNEL)){
+                readHumidity();
+            }
+        } catch (OneWireException ex) {
+            Logger.getLogger(Device.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+}

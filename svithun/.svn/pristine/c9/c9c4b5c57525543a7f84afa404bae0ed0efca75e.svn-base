@@ -1,0 +1,22 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package Gnuplot;
+
+/**
+ *
+ * @author Baardsen
+ */
+public class GnuplotTerminalPostScript implements GnuplotTerminal {
+
+    private String size = "";
+    private String type = "postscript";
+
+    public void setSize(String size){
+        this.size = size;
+    }
+    public String getSize(){ return this.size; }
+    public String getType() { return this.type; }
+}

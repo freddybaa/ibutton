@@ -1,0 +1,44 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package Gnuplot;
+
+import com.panayotis.gnuplot.JavaPlot;
+import com.panayotis.gnuplot.swing.JPlot;
+import com.panayotis.gnuplot.terminal.GNUPlotTerminal;
+import com.panayotis.gnuplot.terminal.ImageTerminal;
+
+/**
+ *
+ * @author Baardsen
+ */
+public class Main {
+    public static void main(String [] args) throws Exception{
+        Gnuplot gnuplot = new Gnuplot("K:\\GNUPLOT\\bin\\pgnuplot.exe");
+
+        GnuplotTerminal terminal = new GnuplotTerminalPNG();
+        terminal.setSize("1200,800");
+        gnuplot.setTerminal(terminal);
+
+        /*
+        GnuplotDateFormat dateformat = new GnuplotDateFormat();
+        dateformat.setOldFormat("%d.%m.%y_%H:%M%S");
+        dateformat.setOutputFormat("%d.%m.%y-%H:%M");
+        gnuplot.setDateFormat(dateformat);
+        */
+
+        gnuplot.setOutputName("test.png");
+
+        gnuplot.setGrid(true);
+
+        gnuplot.setXLabel("XLABEL");
+        gnuplot.setYLabel("YLABEL");
+        gnuplot.setTitle("Test graph");
+        gnuplot.set("plot sin(x)");
+
+        gnuplot.plot();
+
+    }
+}

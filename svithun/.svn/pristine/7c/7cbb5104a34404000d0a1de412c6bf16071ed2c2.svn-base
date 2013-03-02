@@ -1,0 +1,31 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package Gnuplot.Terminal;
+
+/**
+ *
+ * @author Baardsen
+ * Basic interface to define the methodheads for TerminalTypes
+ */
+public interface GnuplotTerminal {
+    
+
+    /**
+     *
+     * @return
+     */
+    public String getType();
+    /**
+     *
+     * @param size
+     */
+    public void setSize(String size);
+    /**
+     *
+     * @return
+     */
+    public String getSize();
+}

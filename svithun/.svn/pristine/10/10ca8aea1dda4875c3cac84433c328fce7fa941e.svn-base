@@ -1,0 +1,18 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package Ibutton.Result;
+
+import Ibutton.Result.Result;
+
+/**
+ *
+ * @author Baardsen
+ */
+public class Humidity extends Result{
+    public Humidity(double temperature, long timestamp){
+        super(temperature, timestamp);
+    }
+}

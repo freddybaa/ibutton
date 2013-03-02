@@ -1,0 +1,32 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package Gnuplot;
+
+/**
+ * A class to detect which OS the program is running under.
+ * @author Baardsen
+ */
+public class OS_identifier {
+    /**
+     * Class to detect OS
+     * @return
+     * String with the OS name
+     */
+    private static String getOS(){
+        return System.getProperty("os.name").toLowerCase();
+    }
+    //get methods
+    public static boolean isWindows(){
+        return (getOS().indexOf("win")>= 0);
+    }
+    public static boolean isMac(){
+        return (getOS().indexOf("mac") >= 0);
+
+    }
+    public static boolean isUnix(){
+        return (getOS().indexOf("nix") >= 0 || getOS().indexOf("nux") >= 0);
+    }
+}

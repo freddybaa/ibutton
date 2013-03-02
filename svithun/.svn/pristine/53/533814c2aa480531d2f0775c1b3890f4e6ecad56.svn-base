@@ -1,0 +1,305 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package Ibutton.DeviceHandler;
+
+import Gnuplot.Plot.Gnuplot;
+import Gnuplot.Plot.GnuplotDateFormat;
+import Gnuplot.Plot.GnuplotDateRange;
+import Gnuplot.Plot.Plot;
+import Gnuplot.Terminal.GnuplotTerminal;
+import Gnuplot.Terminal.GnuplotTerminalPNG;
+import Ibutton.Result.TemperatureResult;
+import com.dalsemi.onewire.OneWireException;
+import com.dalsemi.onewire.container.OneWireContainer;
+import com.dalsemi.onewire.container.OneWireContainer41;
+import com.dalsemi.onewire.container.TemperatureContainer;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+
+/**
+ * Handling communication with device, Thermochron.
+ * Can setup new missions, read temperature, set alarm etc
+ * @author Baardsen
+ */
+public class Thermochron extends Device  {
+    /**
+     * Holding the graph path
+     */
+    public String TEMPERATURE_GRAPH_NAME;
+    /**
+     * Holding the raw data path
+     */
+    public String TEMPERATURE_RAW_DATA_NAME;
+    /**
+     * Holding temperature readings
+     */
+    private ArrayList<TemperatureResult> temperatures = new ArrayList<TemperatureResult>();
+
+    /**
+     * Takes container as parameter
+     * @param container OneWireContainer
+     * @throws OneWireException
+     * @throws IOException
+     */
+    public Thermochron(OneWireContainer container) throws OneWireException, IOException{
+        super(container);
+    }
+
+    @Override
+    public ArrayList<TemperatureResult> getTemperatures() {
+        return this.temperatures;
+    }
+
+    @Override
+    public String getDescription() {
+        return super.getDescription();
+    }
+
+    @Override
+    public String getName() {
+        return super.getName();
+    }
+
+    @Override
+    public int getSampleCount() throws OneWireException {
+        return super.getSampleCount();
+    }
+
+    @Override
+    public boolean isMissionRunning() throws OneWireException {
+        return super.isMissionRunning();
+    }
+
+    @Override
+    public void setRollover(boolean state) {
+        super.setRollover(state);
+    }
+
+    @Override
+    public String getAlternativeName() {
+        return super.getAlternativeName();
+    }
+
+    @Override
+    public void loadMission() throws OneWireException {
+        super.loadMission();
+    }
+
+    @Override
+    public void startMission(int sampleRate, int startDelay) throws OneWireException {
+        super.startMission(sampleRate, startDelay);
+    }
+
+    @Override
+    public void stopMission() throws OneWireException {
+        super.stopMission();
+
+    }
+
+
+    @Override
+    public void deleteMemory() throws OneWireException {
+        super.deleteMemory();
+    }
+
+    @Override
+    public String generateFileName(String name, String extension) throws OneWireException {
+        return super.generateFileName(name, extension);
+    }
+
+    
+
+    /**
+      * Getting the mission information setup for the device.
+      * @return String
+      * @throws OneWireException
+      */
+    public String getMissionInformation() throws OneWireException{
+        super.loadMission();
+        String s = String.format(
+                "Mission running: %s\n"+
+                "SUTA enabled: %s\n"+
+                "Sample rate: %s\n"+
+                "Mission start time: %s\n"+
+                "Sample count: %s\n"+
+                "Rollover enabled: %s\n"+
+                "First sample: %s\n"+
+                "Total device samples: %s\n"+
+                "Temperature logging: %s\n"+
+                "Temperature High Alarm: %s\n"+
+                "Temperature Low Alarm: %s\n",
+                super.owc.isMissionRunning(),
+                super.owc.isStartUponTemperatureAlarmEnabled(),
+                super.owc.getMissionSampleRate(0),
+                super.convertDate(owc.getMissionTimeStamp(0)),
+                super.owc.getMissionSampleCount(0),
+                super.owc.isMissionRolloverEnabled(),
+                super.convertDate(owc.getMissionSampleTimeStamp(0, 0)),
+                super.owc.getDeviceSampleCount(),
+                super.owc.getMissionResolution(0),
+                super.owc.getMissionAlarm(OneWireContainer41.TEMPERATURE_CHANNEL, 1),
+                super.owc.getMissionAlarm(OneWireContainer41.TEMPERATURE_CHANNEL, 0)
+                );
+        return s;
+    }
+    /**
+     * Getting the temperature alarm set
+     * @return double temperature
+     * @throws OneWireException
+     */
+    public double getMissionAlarmLow() throws OneWireException{
+        return super.owc.getMissionAlarm(OneWireContainer41.TEMPERATURE_CHANNEL, 1);
+    }
+    /**
+     * Getting the temperature alarm set
+     * @return double temperature
+     * @throws OneWireException
+     */
+    public double getMissionAlarmHigh() throws OneWireException{
+        return super.owc.getMissionAlarm(OneWireContainer41.TEMPERATURE_CHANNEL, 0);
+    }
+     /**
+     * Reading all the temperatures readings on the device.
+     * @throws OneWireException
+     */
+    public void readTemperatures() throws OneWireException{
+
+        if(super.owc.getMissionChannelEnable(OneWireContainer41.TEMPERATURE_CHANNEL)){
+
+             int sampleCount = super.owc.getMissionSampleCount(OneWireContainer41.TEMPERATURE_CHANNEL);
+             for(int i=0;i<sampleCount;i++){
+                  temperatures.add(
+                          new TemperatureResult(super.owc.getMissionSample(OneWireContainer41.TEMPERATURE_CHANNEL, i),
+                                          super.owc.getMissionSampleTimeStamp(OneWireContainer41.TEMPERATURE_CHANNEL, i))
+                                          );
+
+             }
+        }
+    }
+
+    /**
+     * Setting the temperature for high values.
+     * @param alarmHigh
+     * @throws OneWireException
+     */
+    public void setTemperatureAlarmHigh( double alarmHigh) throws OneWireException{
+        if(alarmHigh!=-1){
+            stopMission();
+
+             super.owc.setMissionAlarm(
+                                    OneWireContainer41.TEMPERATURE_CHANNEL,
+                                    TemperatureContainer.ALARM_HIGH,
+                                    alarmHigh);
+               super.owc.setMissionAlarmEnable(
+                                    OneWireContainer41.TEMPERATURE_CHANNEL,
+                                    TemperatureContainer.ALARM_HIGH,
+                                    true);
+        }else{
+            super.owc.setMissionAlarmEnable(
+                                    OneWireContainer41.TEMPERATURE_CHANNEL,
+                                    TemperatureContainer.ALARM_HIGH,
+                                    false);
+        }
+    }
+    /**
+     * Setting the temperature alarm for low values
+     * @param alarmLow
+     * @throws OneWireException
+     */
+    public void setTemperatureAlarmLow(double alarmLow) throws OneWireException{
+        if(alarmLow!=-1){
+            stopMission();
+
+            super.owc.setMissionAlarm(
+                                    OneWireContainer41.TEMPERATURE_CHANNEL,
+                                    TemperatureContainer.ALARM_LOW,
+                                    alarmLow);
+               super.owc.setMissionAlarmEnable(
+                                    OneWireContainer41.TEMPERATURE_CHANNEL,
+                                    TemperatureContainer.ALARM_LOW,
+                                    true);
+        }else{
+            super.owc.setMissionAlarmEnable(
+                                    OneWireContainer41.TEMPERATURE_CHANNEL,
+                                    TemperatureContainer.ALARM_LOW,
+                                    false);
+        }
+    }
+
+    
+     /**
+     * Set the resolution on the temperature resolution
+     * @param resolution
+     * @throws OneWireException
+     */
+    public void setTemperatureResolution(double resolution) throws OneWireException{
+        super.owc.setMissionResolution(0, resolution);
+    }
+
+     /**
+      * Making temperary graph and file names for temperature data and dumping it to the file
+      * @throws IOException
+      * @throws OneWireException
+      */
+    public void saveData() throws IOException, OneWireException{
+        this.TEMPERATURE_GRAPH_NAME = generateFileName("temperature", ".png");
+        this.TEMPERATURE_RAW_DATA_NAME = generateFileName("temperature", ".dat");
+
+        FileWriter fstream = new FileWriter(TEMPERATURE_RAW_DATA_NAME);
+          BufferedWriter out = new BufferedWriter(fstream);
+          for(int i=0;i<temperatures.size();i++){
+              out.write(temperatures.get(i).date + " " + temperatures.get(i).temperature+"\n");
+          }
+
+          //Close the output stream
+          out.close();
+        
+    }
+    /**
+     * Generating the graphs for this device
+     * @throws Exception
+     */
+    public void generateGraph() throws Exception{
+        loadMission();
+        saveData();
+        Gnuplot gnuplot = new Gnuplot("K:\\GNUPLOT\\bin\\pgnuplot.exe");
+        GnuplotTerminal terminal = new GnuplotTerminalPNG();
+        terminal.setSize("1920,1080");
+        gnuplot.setTerminal(terminal);
+        //setting the output name accordingly to the terminal type
+        gnuplot.setOutputName(TEMPERATURE_GRAPH_NAME);
+
+        gnuplot.setTitle(getName() + " - " + getAlternativeName());
+        gnuplot.setYLabel("Temperatures");
+        gnuplot.setXLabel("Date");
+
+        //displaying grid
+        gnuplot.setGrid(true);
+        gnuplot.setYTicks(0.1);
+        GnuplotDateFormat format = new GnuplotDateFormat();
+        //default format from the ibuttons : "%d.%m.%Y_%H:%M:%S"
+        format.setOldFormat(format.DEFAULT);
+        format.setOutputFormat("%d.%m.%Y-%H:%M");
+        //predefined plot using textfile 'data.dat'
+        Plot p = new Plot(TEMPERATURE_RAW_DATA_NAME ,"1:2", Plot.GRAPH_COLOR_BLUE, this.getAlternativeName(), Plot.GRAPH_LINESTYLE_LINES, format);
+        //plotting the predefined plot
+        gnuplot.plot(p);
+
+        //test with date ranges
+        GnuplotDateRange gnudr = new GnuplotDateRange();
+        gnudr.startDate("27", "04", 2012);
+        gnudr.stopDate("28", "04", 2012);
+        gnuplot.setOutputName("TEST.png");
+        Plot pt = new Plot(TEMPERATURE_RAW_DATA_NAME ,"1:2", Plot.GRAPH_COLOR_BLUE, this.getAlternativeName(), Plot.GRAPH_LINESTYLE_LINES, format, gnudr);
+        gnuplot.plot(pt);
+    }
+
+
+
+}

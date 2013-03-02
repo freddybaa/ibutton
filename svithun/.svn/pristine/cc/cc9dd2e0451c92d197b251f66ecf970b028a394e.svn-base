@@ -1,0 +1,75 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package Ibutton;
+
+import Ibutton.DeviceHandler.Device;
+import Ibutton.DeviceHandler.DeviceReader;
+import Ibutton.DeviceHandler.Hygrochron;
+import Ibutton.DeviceHandler.Thermochron;
+import Ibutton.Result.HumidityResult;
+import Ibutton.Result.TemperatureResult;
+import com.dalsemi.onewire.OneWireAccessProvider;
+import com.dalsemi.onewire.OneWireException;
+import com.dalsemi.onewire.adapter.DSPortAdapter;
+import com.dalsemi.onewire.container.OneWireContainer;
+import com.dalsemi.onewire.container.OneWireContainer21;
+import com.dalsemi.onewire.container.OneWireContainer41;
+import com.sun.xml.internal.ws.api.addressing.OneWayFeature;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import org.omg.CORBA.portable.InputStream;
+
+/**
+ *
+ * @author Baardsen
+ */
+public class Main {
+
+    
+    /**
+     * Main program, demostrating the communcation with the ibutton devices.
+     * @param args
+     * @throws OneWireException
+     * @throws IOException
+     */
+    public static void main(String [] args) throws OneWireException, IOException{
+        DeviceReader dr = new DeviceReader();
+
+        System.out.printf("%s - %s - %s - %s\n", dr.getName(), dr.getAlternativeName(), dr.getAdress(), dr.getDescription());
+
+        //finding hygrocron/thermacron
+        ArrayList<OneWireContainer> devices = new ArrayList<OneWireContainer>();
+        devices = dr.getDevices();
+
+        
+
+        for(int i=0;i<devices.size();i++){
+
+            if(devices.get(i).getAlternateNames()=="Hygrochron"){
+                Hygrochron hc = new Hygrochron(devices.get(i));
+                System.out.println(hc.getName() + " - " + hc.getAlternativeName());
+                System.out.println(hc.getDescription());
+                System.out.println();
+                System.out.println(hc.getMissionInformation());
+                
+            }else{
+               Thermochron tc = new Thermochron( devices.get(i));
+               System.out.println(tc.getName() + " - " + tc.getAlternativeName());
+               System.out.println(tc.getDescription());
+               System.out.println();
+               System.out.println(tc.getMissionInformation());
+            }
+        }
+
+       
+        
+
+        
+        
+    }
+}

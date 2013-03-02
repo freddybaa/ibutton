@@ -1,0 +1,25 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package Gnuplot;
+
+/**
+ *
+ * @author Baardsen
+ */
+public class GnuplotTerminalSVG implements GnuplotTerminal{
+    private String filename = "";
+    private String size = "";
+    private String type = "svg";
+
+    public void setOutputFileName(String filename) {
+        this.filename = filename;
+    }
+    public void setSize(String size){
+        this.size = size;
+    }
+    public String getSize(){ return this.size; }
+    public String getType() { return this.type; }
+}

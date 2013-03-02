@@ -1,0 +1,96 @@
+
+
+package ibutton_;
+import com.dalsemi.onewire.adapter.DSPortAdapter;
+import com.dalsemi.onewire.container.*;
+/**
+ *
+ * @author Baardsen
+ * This class handles the container and the devices found in Ibutton. An overhead for IbuttonHumidityContainer and
+ * IbuttonTemperatureContainer.
+ */
+public class IbuttonContainer implements IbuttonContainerImplement{
+
+    //port adapter
+    private DSPortAdapter adapter;
+
+    //default values
+    private String alternateName = "";
+    private String description = "";
+    private String name = "";
+    private String port_name = "";
+
+    //container
+    private HumidityContainer hc = null;
+    private TemperatureContainer tc = null;
+
+    private String container = "";
+    public IbuttonContainer(DSPortAdapter adapter, String port_name, String alternateNames, String description, String name, HumidityContainer hc ){
+        //adapter
+        this.adapter = adapter;
+
+
+        //port names and description
+        this.port_name = port_name;
+        this.alternateName = alternateNames;
+        this.description = description;
+        this.name = name;
+
+        //onewirecontainer
+        this.hc = hc;
+
+        this.container = "Humidity";
+    }
+
+     public IbuttonContainer(DSPortAdapter adapter, String port_name,String alternateNames, String description, String name, TemperatureContainer tc ){
+        //adapter
+        this.adapter = adapter;
+
+        //port names and description
+        this.alternateName = alternateNames;
+        this.description = description;
+        this.name = name;
+        this.port_name = port_name;
+
+        //onewirecontainer
+        this.tc = tc;
+
+        this.container = "Temperature";
+    }
+
+    //get methods
+    public String getPortName(){
+        return this.port_name;
+    }
+    public DSPortAdapter getAdapter() {
+        return this.adapter;
+    }
+
+    public String getAlternateName() {
+        return this.alternateName;
+    }
+    
+    public HumidityContainer getHumidityContainer(){
+        return this.hc;
+    }
+    public TemperatureContainer getTemperatureContainer() {
+        return this.tc;
+    }
+
+    public String getDescription() {
+        return this.description;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    @Override
+    public String toString(){
+        String s=this.getAdapter().getAdapterName()+"\t"+this.getName()+"\t"+this.getPortName()+"\t"+this.getAlternateName()+"\t"+this.getDescription();
+        return s;
+
+    }
+
+
+}

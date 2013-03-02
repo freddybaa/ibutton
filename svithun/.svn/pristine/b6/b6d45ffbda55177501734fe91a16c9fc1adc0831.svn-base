@@ -1,0 +1,491 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package Ibutton.DeviceHandler;
+
+import Gnuplot.Plot.Gnuplot;
+import Gnuplot.Plot.GnuplotDateFormat;
+import Gnuplot.Plot.GnuplotDateRange;
+import Gnuplot.Plot.Plot;
+import Gnuplot.Terminal.GnuplotTerminal;
+import Gnuplot.Terminal.GnuplotTerminalPNG;
+import Gnuplot.Terminal.GnuplotTerminalSVG;
+import Ibutton.Result.HumidityResult;
+import Ibutton.Result.TemperatureResult;
+import com.dalsemi.onewire.OneWireException;
+import com.dalsemi.onewire.container.ADContainer;
+import com.dalsemi.onewire.container.OneWireContainer;
+import com.dalsemi.onewire.container.OneWireContainer41;
+import com.dalsemi.onewire.container.TemperatureContainer;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+
+/**
+ * Handling communication with device, Hygrochron.
+ * Can setup new missions, read temperature/humdity, set alarm etc.
+ * @author Baardsen
+ */
+public class Hygrochron extends Device{
+     /**
+      * Holding temperature readings
+      */
+     private ArrayList<TemperatureResult> temperatures = new ArrayList<TemperatureResult>();
+     /**
+      * Holding Humidity Readings.
+      */
+     public ArrayList<HumidityResult> humidity = new ArrayList<HumidityResult>();
+
+     /**
+      * Takes container as parameter
+      * @param container OneWireContainer
+      * @throws OneWireException
+      */
+
+     /**
+      * Holding the raw humidity data path
+      */
+     public String HUMIDITY_RAW_DATA_NAME;
+     /**
+      * Holding the raw temperature data path
+      */
+     public String TEMPERATURE_RAW_DATA_NAME;
+     /**
+      * Holding the humidity graph path
+      */
+     public String HUMIDITY_GRAPH_NAME;
+     /**
+      * Holding the temperature graph path
+      */
+     public String TEMPERATURE_GRAPH_NAME;
+     /**
+      * Holding the temperature/humidity raw data path
+      */
+     public String TEMP_HUM_RAW_DATA_NAME;
+     /**
+      * Holding the temperature/humidity graph path
+      */
+     public String TEMP_HUM_GRAPH_NAME;
+  
+     /**
+      * Takes OneWireContainer as parameter
+      * @param container OneWireContainer
+      * @throws OneWireException
+      * @throws IOException
+      */
+     public Hygrochron(OneWireContainer container) throws OneWireException, IOException{
+         super(container);
+       
+
+    }
+
+    @Override
+    public String getDescription() {
+        return super.getDescription();
+    }
+
+    @Override
+    public String getName() {
+        return super.getName();
+    }
+
+    @Override
+    public int getSampleCount() throws OneWireException {
+        return super.getSampleCount();
+    }
+
+    @Override
+    public void loadMission() throws OneWireException {
+        super.loadMission();
+    }
+
+    @Override
+    public boolean isMissionRunning() throws OneWireException {
+        return super.isMissionRunning();
+    }
+
+    @Override
+    public void setRollover(boolean state) {
+        super.setRollover(state);
+    }
+
+    @Override
+    public void startMission(int sampleRate, int startDelay) throws OneWireException {
+        super.startMission(sampleRate, startDelay);
+    }
+
+    @Override
+    public void stopMission() throws OneWireException {
+        super.stopMission();
+    }
+
+    @Override
+    public void deleteMemory() throws OneWireException {
+        super.deleteMemory();
+    }
+
+    @Override
+    public String getAlternativeName() {
+        return super.getAlternativeName();
+    }
+
+    @Override
+    public String generateFileName(String name, String extension) throws OneWireException {
+        return super.generateFileName(name, extension);
+    }
+
+
+     /**
+      * Getting the temperature readings
+      * @return ArrayList<TemperatureResult>
+      */
+    public ArrayList<TemperatureResult> getTemperatures(){ return this.temperatures; }
+   /**
+    * Getting the humidity readings
+    * @return ArrayList<HumidityResult>
+    */
+    public ArrayList<HumidityResult> getHumidity(){ return this.humidity; }
+
+    /**
+     * Getting the temperature alarm set
+     * @return double temperature
+     * @throws OneWireException
+     */
+    public double getMissionAlarmHumHigh() throws OneWireException{
+        return  super.owc.getMissionAlarm(OneWireContainer41.DATA_CHANNEL, 1);
+    }
+    /**
+     * Getting the temperature alarm set
+     * @return double temperature
+     * @throws OneWireException
+     */
+    public double getMissionAlarmHumLow() throws OneWireException{
+       return super.owc.getMissionAlarm(OneWireContainer41.DATA_CHANNEL, 0);
+    }
+    /**
+     * Getting the temperature alarm set
+     * @return double temperature
+     * @throws OneWireException
+     */
+    public double getMissionAlarmTempHigh() throws OneWireException{
+        return super.owc.getMissionAlarm(OneWireContainer41.TEMPERATURE_CHANNEL, 1);
+    }
+    /**
+     * Getting the temperature alarm set
+     * @return double temperature
+     * @throws OneWireException
+     */
+    public double getMissionAlarmTempLow() throws OneWireException{
+         return super.owc.getMissionAlarm(OneWireContainer41.TEMPERATURE_CHANNEL, 0);
+
+    }
+      /**
+     * Reading all the temperatures readings on the device.
+     * @throws OneWireException
+     */
+    public void readTemperatures() throws OneWireException{
+
+        //check to see if mission is enabled
+        if(owc.getMissionChannelEnable(OneWireContainer41.TEMPERATURE_CHANNEL)){
+
+             //getting the sample count
+             int sampleCount = owc.getMissionSampleCount(OneWireContainer41.TEMPERATURE_CHANNEL);
+             for(int i=0;i<sampleCount;i++){
+                  //adding the temperature to the arraylist
+                 temperatures.add(
+                          new TemperatureResult(owc.getMissionSample(OneWireContainer41.TEMPERATURE_CHANNEL, i),
+                                          owc.getMissionSampleTimeStamp(OneWireContainer41.TEMPERATURE_CHANNEL, i))
+                                          );
+
+             }
+        }
+    }
+    /**
+     * Reading all the humidity readings on the device.
+     * @throws OneWireException
+     */
+    public void readHumidity() throws OneWireException{
+        //check to see if mission is enabled
+        if (owc.getMissionChannelEnable(OneWireContainer41.DATA_CHANNEL)) {
+            //getting the sample count
+            int sampleCount = owc.getMissionSampleCount(OneWireContainer41.DATA_CHANNEL);
+            for(int i=0;i<sampleCount;i++){
+                //adding the humidity to the arraylist
+                humidity.add(new HumidityResult(owc.getMissionSample(OneWireContainer41.DATA_CHANNEL, i),
+                                                owc.getMissionSampleTimeStamp(OneWireContainer41.DATA_CHANNEL, i))
+                                                );
+            }
+        }
+    }
+
+
+     /**
+      * Getting the mission information setup for the device.
+      * @return String
+      * @throws OneWireException
+      */
+     public String getMissionInformation() throws OneWireException{
+        super.loadMission();
+        String s = String.format(
+                "Mission running: %s\n\r"+
+                "SUTA enabled: %s\n\r"+
+                "Sample rate: %s\n\r"+
+                "Mission start time: %s\n\r"+
+                "Sample count: %s\n\r"+
+                "Rollover enabled: %s\n\r"+
+                "First sample: %s\n\r"+
+                "Total device samples: %s\n\r"+
+                "Temperature logging: %s\n\r"+
+                "Temperature High Alarm: %s\n\r"+
+                "Temperature Low Alarm: %s\n\r"+
+                "Data Logging: %s\n\r"+
+                "Data High Alarm: %s\n\r"+
+                "Data Low Alarm: %s\n\r",
+                super.owc.isMissionRunning(),
+                super.owc.isStartUponTemperatureAlarmEnabled(),
+                super.owc.getMissionSampleRate(0),
+                super.convertDate(owc.getMissionTimeStamp(0)),
+                super.owc.getMissionSampleCount(0),
+                super.owc.isMissionRolloverEnabled(),
+                super.convertDate(owc.getMissionSampleTimeStamp(0, 0)),
+                super.owc.getDeviceSampleCount(),
+                super.owc.getMissionResolution(0),
+                super.owc.getMissionAlarm(OneWireContainer41.TEMPERATURE_CHANNEL, 1),
+                super.owc.getMissionAlarm(OneWireContainer41.TEMPERATURE_CHANNEL, 0),
+                super.owc.getMissionResolution(1),
+                super.owc.getMissionAlarm(OneWireContainer41.DATA_CHANNEL, 1),
+                super.owc.getMissionAlarm(OneWireContainer41.DATA_CHANNEL, 0)
+                );
+        return s;
+    }
+
+    public String getMissionStartDate() throws OneWireException{ return super.convertDate(owc.getMissionTimeStamp(0)); }
+
+    /**
+     * Setting the humidity alarm for high values.
+     * @param alarmHigh
+     * @throws OneWireException
+     */
+    public void setHumidityAlarmHigh(double alarmHigh) throws OneWireException{
+        if(alarmHigh!=-1){
+            stopMission();
+
+            super.owc.setMissionAlarm(
+                                    OneWireContainer41.DATA_CHANNEL,
+                                    ADContainer.ALARM_HIGH,
+                                    alarmHigh);
+               super.owc.setMissionAlarmEnable(
+                                    OneWireContainer41.DATA_CHANNEL,
+                                    ADContainer.ALARM_HIGH,
+                                    true);
+        }else{
+            super.owc.setMissionAlarmEnable(
+                                    OneWireContainer41.DATA_CHANNEL,
+                                    ADContainer.ALARM_HIGH,
+                                    false);
+        }
+    }
+
+    /**
+     * Setting the humidity alarm for low values
+     * @param alarmLow Double
+     * @throws OneWireException
+     */
+    public void setHumidityAlarmLow(double alarmLow) throws OneWireException{
+         if(alarmLow!=-1){
+             stopMission();
+
+            super.owc.setMissionAlarm(
+                                    OneWireContainer41.DATA_CHANNEL,
+                                    ADContainer.ALARM_LOW,
+                                    alarmLow);
+               super.owc.setMissionAlarmEnable(
+                                    OneWireContainer41.DATA_CHANNEL,
+                                    ADContainer.ALARM_LOW,
+                                    true);
+         }else{
+             super.owc.setMissionAlarmEnable(
+                                    OneWireContainer41.DATA_CHANNEL,
+                                    ADContainer.ALARM_LOW,
+                                    false);
+         }
+    }
+
+
+    /**
+     * Setting the temperature for high values.
+     * @param alarmHigh
+     * @throws OneWireException
+     */
+    public void setTemperatureAlarmHigh( double alarmHigh) throws OneWireException{
+        if(alarmHigh!=-1){
+            stopMission();
+
+             super.owc.setMissionAlarm(
+                                    OneWireContainer41.TEMPERATURE_CHANNEL,
+                                    TemperatureContainer.ALARM_HIGH,
+                                    alarmHigh);
+               super.owc.setMissionAlarmEnable(
+                                    OneWireContainer41.TEMPERATURE_CHANNEL,
+                                    TemperatureContainer.ALARM_HIGH,
+                                    true);
+        }else{
+            super.owc.setMissionAlarmEnable(
+                                    OneWireContainer41.TEMPERATURE_CHANNEL,
+                                    TemperatureContainer.ALARM_HIGH,
+                                    false);
+        }
+    }
+    /**
+     * Setting the temperature alarm for low values
+     * @param alarmLow
+     * @throws OneWireException
+     */
+    public void setTemperatureAlarmLow(double alarmLow) throws OneWireException{
+        if(alarmLow!=-1){
+            stopMission();
+
+            super.owc.setMissionAlarm(
+                                    OneWireContainer41.TEMPERATURE_CHANNEL,
+                                    TemperatureContainer.ALARM_LOW,
+                                    alarmLow);
+               super.owc.setMissionAlarmEnable(
+                                    OneWireContainer41.TEMPERATURE_CHANNEL,
+                                    TemperatureContainer.ALARM_LOW,
+                                    true);
+        }else{
+            super.owc.setMissionAlarmEnable(
+                                    OneWireContainer41.TEMPERATURE_CHANNEL,
+                                    TemperatureContainer.ALARM_LOW,
+                                    false);
+        }
+    }
+
+    /**
+     * Set the resolution on the temperature resolution
+     * @param resolution
+     * @throws OneWireException
+     */
+    public void setTemperatureResolution(double resolution) throws OneWireException{
+        stopMission();
+        super.owc.setMissionResolution(0, resolution);
+    }
+    /**
+     * Set the resolution on the humidity recording
+     * @param resolution -
+     * @throws OneWireException
+     */
+    public void setHumidityResolution(double resolution) throws OneWireException{
+         stopMission();
+         super.owc.setMissionResolution(1, resolution);
+    }
+    /**
+     * Dumping all the humidity data to a text file
+     * @throws IOException
+     * @throws OneWireException
+     */
+    private void saveHumidityData() throws IOException, OneWireException{
+
+        FileWriter fstream = new FileWriter(HUMIDITY_RAW_DATA_NAME);
+          BufferedWriter out = new BufferedWriter(fstream);
+          for(int i=0;i<humidity.size();i++){
+              out.write(humidity.get(i).date + " " + humidity.get(i).temperature+"\n");
+          }
+          //Close the output stream
+          out.close();
+
+    }
+
+    /**
+     * Dumping all the temperature data to a text file
+     * @throws IOException
+     * @throws OneWireException
+     */
+    private void saveTemperatureData() throws IOException, OneWireException{
+        FileWriter fstream = new FileWriter(TEMPERATURE_RAW_DATA_NAME);
+          BufferedWriter out = new BufferedWriter(fstream);
+          for(int i=0;i<temperatures.size();i++){
+              out.write(temperatures.get(i).date + " " + temperatures.get(i).temperature+"\n");
+          }
+
+          //Close the output stream
+          out.close();
+    }
+     
+     /**
+      * Making temperary graph and file names for the humidity and temperature data
+      * @throws IOException
+      * @throws OneWireException
+      */
+     public void saveData() throws IOException, OneWireException{
+        this.HUMIDITY_GRAPH_NAME = generateFileName("humidity", ".png");
+        this.TEMPERATURE_GRAPH_NAME = generateFileName("temperature", ".png");
+        this.HUMIDITY_RAW_DATA_NAME = generateFileName("humidity", ".dat");
+        this.TEMPERATURE_RAW_DATA_NAME = generateFileName("temperature", ".dat");
+        this.TEMP_HUM_GRAPH_NAME = generateFileName("HUM_TEMP", ".png");
+        this.saveHumidityData();
+        this.saveTemperatureData();
+    }
+
+    /**
+     * Generating the graphs for this device
+     * @throws Exception
+     */
+    public void generateGraph() throws Exception{
+        loadMission();
+        saveData();
+
+        //GENERAL GNUPLOT SETUP FOR THE PLOTTING PROCESS
+        Gnuplot gnuplot = new Gnuplot("K:\\GNUPLOT\\bin\\pgnuplot.exe");
+        GnuplotTerminal terminal = new GnuplotTerminalPNG();
+        terminal.setSize("800,640");
+        gnuplot.setTerminal(terminal);
+        gnuplot.setGrid(true);
+        gnuplot.setYTicks(0.1);
+        GnuplotDateFormat format = new GnuplotDateFormat();
+        format.setOldFormat(format.DEFAULT);
+        format.setOutputFormat("%d.%m.%Y-%H:%M");
+
+        //HUMIDITY
+        gnuplot.setOutputName(HUMIDITY_GRAPH_NAME);
+
+        Plot plot_humidity = new Plot(HUMIDITY_RAW_DATA_NAME ,
+                "1:2",
+                Plot.GRAPH_COLOR_ORANGE,
+                getAlternativeName(),
+                Plot.GRAPH_LINESTYLE_LINEPOINTS,
+                format);
+
+        gnuplot.plot(plot_humidity);
+
+        //TEMPERATURE
+        gnuplot.setOutputName(TEMPERATURE_GRAPH_NAME);
+
+        Plot plot_temperature = new Plot(TEMPERATURE_RAW_DATA_NAME, 
+                "1:2",
+                Plot.GRAPH_COLOR_PINK,
+                getAlternativeName(),
+                Plot.GRAPH_LINESTYLE_LINEPOINTS,
+                format);
+
+        gnuplot.plot(plot_temperature);
+
+        //BOTH IN SAME GRAPH
+        gnuplot.setOutputName(TEMP_HUM_GRAPH_NAME);
+     
+        Plot both = new Plot(new String []{TEMPERATURE_RAW_DATA_NAME, HUMIDITY_RAW_DATA_NAME},
+                new String []{"1:2","1:2"},
+                new String[]{Plot.GRAPH_COLOR_BLUE, Plot.GRAPH_COLOR_GREEN} ,
+                new String[]{"Temperature", "Humidity"},
+                new String[]{Plot.GRAPH_LINESTYLE_LINEPOINTS, Plot.GRAPH_LINESTYLE_LINEPOINTS},
+                format);
+       
+        gnuplot.plot(both);
+
+    }
+
+    
+}

@@ -1,0 +1,28 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package Gnuplot;
+
+/**
+ * A simple class with predefined color values and their hex to be used to plot graphs in different colors.
+ * @author Baardsen
+ */
+public class GraphColor {
+    
+    public static String RED = "#ff0004";
+    
+    public static String BLUE = "#0061ff";
+    
+    public static String ORANGE = "#ff8c00";
+    
+    public static String BLACK = "#000000";
+    
+    public static String PINK = "#e100ff";
+   
+    public static String GREEN = "#329610";
+    
+    public static String YELLOW = "#fff600";
+
+}

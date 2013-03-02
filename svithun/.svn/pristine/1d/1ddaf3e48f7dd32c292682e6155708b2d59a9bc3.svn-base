@@ -1,0 +1,21 @@
+
+
+package ibutton_;
+import com.dalsemi.onewire.adapter.DSPortAdapter;
+import com.dalsemi.onewire.container.HumidityContainer;
+import com.dalsemi.onewire.container.TemperatureContainer;
+
+/**
+ * Interface to predefine the method heads in IbuttonContainer, IbuttonHumidityContainer and IbuttonTemperatureContainer.
+ * @author Baardsen
+ */
+public interface IbuttonContainerImplement {
+    public String getAlternateName();
+    public String getName();
+    public String getDescription();
+    public DSPortAdapter getAdapter();
+    public HumidityContainer getHumidityContainer();
+    public TemperatureContainer getTemperatureContainer();
+    public String getPortName();
+    public String toString();
+}

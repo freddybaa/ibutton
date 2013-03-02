@@ -1,0 +1,258 @@
+
+package Gnuplot.Plot;
+
+
+import Gnuplot.Terminal.GnuplotTerminalDefault;
+import Gnuplot.Terminal.GnuplotTerminal;
+import java.io.BufferedWriter;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+
+/**
+ * This is a basic java interface to Gnuplot, can be used to plot graphs and play around with gnuplot.
+ * @author Baardsen
+ */
+public class Gnuplot {
+
+
+    //path to gnuplot
+    private String path = "";
+
+    //validation variables
+    private boolean terminal = false;
+    private boolean output = false;
+    
+    //color of the graph
+    private String graphColor = "";
+
+    //holding lowlevel commands to execute
+    private ArrayList<String> to_plot = new ArrayList<String>();
+    
+
+    /**
+     * Constructor for gnuplot
+     * @param path
+     * path to where gnuplot is located
+     */
+    public Gnuplot(String path){
+        this.path = path;
+    }
+
+    public Gnuplot(){
+        this.path = System.getProperty("user.dir")+"\\GNUPLOT\\bin\\pgnuplot.exe";
+    }
+    /**
+     * Setting the terminal
+     * @param terminal
+     * Object: GnuplotTerminalPng, GnuplotTerminalPostScript, GnuplotTerminalSVG, GnuplotTerminalDefault
+     */
+    public void setTerminal(GnuplotTerminal terminal){
+        if(terminal.getSize()!=""){ this.to_plot.add("set terminal " + terminal.getType() + " size " + terminal.getSize()); }
+        else this.to_plot.add("set terminal " + terminal.getType());
+        this.terminal = true;
+    }
+    /**
+     * Outputname of the graph
+     * @param name
+     * Name of the graph
+     */
+    public void setOutputName(String name){
+        this.to_plot.add("set output '" + name + "'");
+        output = true;
+    }
+    /**
+     * Setting the size of the graph
+     * @param size
+     * String value like '1200,800'
+     */
+    public void setSize(String size){
+        this.to_plot.add("set size "+ size +"");
+    }
+    /**
+     * Title of the graph
+     * @param title
+     * Mygraph
+     */
+    public void setTitle(String title){
+        this.to_plot.add("set title \""+ title +"\"");
+    }
+    /**
+     * Setting the xlabel of the graph
+     * @param xlabel
+     * String name
+     */
+    public void setXLabel(String xlabel){
+        this.to_plot.add("set xlabel \""+ xlabel +"\"");
+    }
+    /**
+     * Setting ylabel of the graph
+     * @param ylabel
+     * String name
+     */
+    public void setYLabel(String ylabel){
+        this.to_plot.add("set ylabel \""+ ylabel +"\"");
+    }
+    /**
+     * Method to use gnuplot lowlevel commands.
+     * @param cmd
+     * i.e plot sin(x)
+     */
+    public void set(String cmd){
+        this.to_plot.add(cmd);
+    }
+
+    /**
+     * Set grid
+     * @param option
+     * True/false
+     */
+    public void setGrid(boolean option){
+        if(option){
+            this.to_plot.add("set grid");
+        }
+    }
+
+
+    /**
+     * Method to set the yticks scaling on the graph
+     * @param value double value with the ticks
+     */
+    public void setYTicks(double value){
+        set("set yticks "+value);
+    }
+
+    /**
+     * Set mytics
+     * @param ticks
+     * int value of the ticks
+     */
+    public void setMyTics(int ticks){
+        this.to_plot.add("set mytics " + ticks);
+    }
+
+    /**
+     * Set mxtics
+     * @param ticks
+     * int value of the ticks
+     */
+    public void setMxTics(int ticks){
+        this.to_plot.add("set mxtics " + ticks);
+    }
+
+    /**
+     * Method to set the yrange of the graph
+     * @param min
+     * double minimum y value
+     * @param max
+     * double maximum y value
+     */
+    public void setYrange(double min, double max){
+        this.to_plot.add("set yrange ["+min+":"+max+"]");
+    }
+
+    /**
+     * Method to set the xrange of the graph
+     * @param min
+     * double minimum x value
+     * @param max
+     * double maximum x value
+     */
+    public void setXrange(double min, double max){
+        this.to_plot.add("set xrange ["+min+":"+max+"]");
+    }
+    
+    /** Method to set the color of the graph
+     * @param color
+     * Either hex or use GraphColor to pick a color.
+     */
+    public void setGraphColor(String color){
+        this.graphColor = color;
+    }
+
+    /**
+     *
+     * @param dateFormat
+     */
+    public void setDateFormat(GnuplotDateFormat dateFormat){
+        this.to_plot.add("set xdata time");
+        this.to_plot.add("set timefmt '" + dateFormat.getOldFormat() + "'");
+        this.to_plot.add("set format x '"+ dateFormat.getNewFormat() + "'");
+        //rotate the date format, so it will display it vertically.
+        this.setXTics("rotate by 90");
+        
+    }
+    /**
+     * Setting the XTicks for the graph
+     * @param value double
+     */
+    /**
+     *
+     * @param opt
+     */
+    public void setXTics(String opt){
+        this.to_plot.add("set xtics "+opt);
+    }
+
+    /**
+     * Method to use to plot from files. This takes an instance of the Plot object, which is used to generate plots
+     * @param p
+     * Plot object for generating plots
+     * @throws Exception
+     */
+    public void plot(Plot p) throws Exception{
+        if(ready()){
+          if(p.getDateFormat()==null){
+              this.to_plot.add(p.getPlotString());
+              this.plot();
+          }else{
+              setDateFormat(p.getDateFormat());
+              this.to_plot.add(p.getPlotString());
+              this.plot();
+          }
+        }
+    }
+
+    /**
+     * Validation method to check wether everything is ok
+     * @return
+     * true/false
+     */
+    private boolean ready(){
+        boolean status = false;
+        if(!terminal){
+            //if not terminal is predefined, use the default one.
+            GnuplotTerminal t = new GnuplotTerminalDefault();
+            this.setTerminal(t);
+            status = true;   
+        }else{
+            status = true;
+        }
+        return status;
+    }
+    /**
+     * Method to communicate with gnuplot
+     * @throws Exception
+     */
+    public void plot() throws Exception{
+        if(this.ready()){
+            Process p =
+            Runtime.getRuntime().exec(this.path);
+            OutputStream outputStream = p.getOutputStream();
+            PrintWriter pw=new PrintWriter(new BufferedWriter(new OutputStreamWriter(outputStream)));
+             for(int i=0;i<to_plot.size();i++){
+                 //debug
+                 System.out.println(to_plot.get(i));
+
+                 pw.println(to_plot.get(i)+"\n");
+             }
+             pw.close();
+        }
+    }
+
+   
+
+
+}
+

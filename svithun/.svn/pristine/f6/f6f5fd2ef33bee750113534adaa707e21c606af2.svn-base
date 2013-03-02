@@ -1,0 +1,187 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package GUI;
+
+import Ibutton.DeviceHandler.Hygrochron;
+import Ibutton.DeviceHandler.Thermochron;
+import com.dalsemi.onewire.OneWireException;
+import com.dalsemi.onewire.container.OneWireContainer;
+import com.dalsemi.onewire.container.OneWireContainer41;
+import com.sun.corba.se.impl.orbutil.DenseIntMapImpl;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JFormattedTextField;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+
+/**
+ *
+ * @author Baardsen
+ */
+public class SetupMission extends JFrame {
+
+    private static final int w = 400;
+    private static final int h = 800;
+    private static final int TEXTBOX_WIDTH = 50;
+    private static final int TEXTBOX_HEIGHT = 5;
+    private Container container;
+
+
+    private Hygrochron hygrochron;
+    private Thermochron thermochron;
+    private Boolean THERMOCHRON = false;
+    private Boolean HYGROCHRON = false;
+    private JCheckBox jc, suta;
+    private JTextField sample_rate, delay_time, temp_alarm_high, temp_alarm_low, hum_alarm_high, hum_alarm_low;
+
+     private class SetupButtonHandler implements ActionListener {
+
+        public void actionPerformed(ActionEvent e){
+            if(THERMOCHRON)
+                try {
+                thermochron.stopMission();
+                thermochron.setRollover(jc.isEnabled());
+                thermochron.setTemperatureAlarmHigh(Double.parseDouble( temp_alarm_high.getText()) );
+                thermochron.setTemperatureAlarmLow(Double.parseDouble( temp_alarm_low.getText()) );
+
+              
+                    thermochron.startMission(
+                            Integer.parseInt( sample_rate.getText() ),
+                            Integer.parseInt( delay_time.getText())
+                            );
+                System.out.println(thermochron.getMissionInformation());
+            } catch (OneWireException ex) {
+                Logger.getLogger(SetupMission.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            else
+                try {
+                hygrochron.stopMission();
+                hygrochron.setRollover(jc.isEnabled());
+                hygrochron.setHumidityAlarmHigh(Double.parseDouble(hum_alarm_high.getText()));
+                hygrochron.setHumidityAlarmLow(Double.parseDouble(hum_alarm_low.getText()));
+                hygrochron.setTemperatureAlarmHigh(Double.parseDouble(temp_alarm_high.getText()));
+                hygrochron.setTemperatureAlarmLow(Double.parseDouble(temp_alarm_low.getText()));
+              
+                    hygrochron.startMission(
+                            Integer.parseInt(sample_rate.getText()),
+                            Integer.parseInt(delay_time.getText())
+                            );
+                System.out.println(hygrochron.getMissionInformation());
+            } catch (OneWireException ex) {
+                Logger.getLogger(SetupMission.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+    }
+
+    /**
+     * Setting up the device and the gui
+     * @param owc
+     * @throws OneWireException
+     */
+     /**
+      *
+      * @param owc
+      * @throws OneWireException
+      */
+     public SetupMission(Object owc) throws OneWireException{
+        try{
+            hygrochron = (Hygrochron) owc;
+            HYGROCHRON = true;
+        }catch(Exception e){
+
+        }
+        try{
+            thermochron = (Thermochron) owc;
+            THERMOCHRON = true;
+
+        }catch(Exception e){
+
+        }
+        container = getContentPane();
+        container.setLayout(new GridLayout(8,2));
+
+        makeForm();
+
+        if(THERMOCHRON)
+            setTitle(thermochron.getAlternativeName());
+        else
+            setTitle(hygrochron.getAlternativeName());
+
+        setSize(w, h);
+        setVisible(true);
+        
+    }
+
+    private void makeForm() throws OneWireException{
+        JLabel jl;
+        JButton b;
+        Dimension d = new Dimension(TEXTBOX_HEIGHT, TEXTBOX_WIDTH);
+        jl = new JLabel("Sample rate", SwingConstants.LEFT);
+        jl.setPreferredSize(d);
+        sample_rate = new JTextField();
+        sample_rate.setPreferredSize(d);
+        container.add(jl);
+        container.add(sample_rate);
+
+        jl = new JLabel("Delay start", SwingConstants.LEFT);
+        delay_time = new JTextField();
+        container.add(jl);
+        container.add(delay_time);
+
+        jl = new JLabel("Rollover: ", SwingConstants.LEFT);
+        jc = new JCheckBox();
+        container.add(jl);
+        container.add(jc);
+
+        jl = new JLabel("Temperature Alarm High: ", SwingConstants.LEFT);
+        temp_alarm_high = new JTextField();
+        container.add(jl);
+        container.add(temp_alarm_high);
+
+        jl = new JLabel("Temperature Alarm Low: ", SwingConstants.LEFT);
+        temp_alarm_low = new JTextField();
+        container.add(jl);
+        container.add(temp_alarm_low);
+
+        if(HYGROCHRON){
+            temp_alarm_high.setText(""+hygrochron.getMissionAlarmTempHigh());
+            temp_alarm_low.setText(""+hygrochron.getMissionAlarmTempLow());
+            jl = new JLabel("Humidity Alarm High: ", SwingConstants.LEFT);
+            hum_alarm_high = new JTextField();
+            hum_alarm_high.setText(""+hygrochron.getMissionAlarmHumHigh());
+            container.add(jl);
+            container.add(hum_alarm_high);
+
+            jl = new JLabel("Humidity Alarm Low: ", SwingConstants.LEFT);
+            hum_alarm_low = new JTextField();
+            hum_alarm_low.setText(""+hygrochron.getMissionAlarmHumLow());
+            container.add(jl);
+            container.add(hum_alarm_low);
+        }else{
+            temp_alarm_high.setText(""+thermochron.getMissionAlarmHigh());
+            temp_alarm_low.setText(""+thermochron.getMissionAlarmLow());
+        }
+
+        jl = new JLabel("SUTA: ", SwingConstants.LEFT);
+        suta = new JCheckBox();
+        container.add(jl);
+        container.add(suta);
+
+        b = new JButton("Start mission");
+        b.addActionListener(new SetupButtonHandler());
+        container.add(b);
+    }
+}

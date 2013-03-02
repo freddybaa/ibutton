@@ -1,0 +1,21 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package ibutton_;
+
+import java.util.ArrayList;
+
+public class Main {
+
+    public static void main (String args []){
+        Ibutton ibutton = new Ibutton();
+        ArrayList<IbuttonTemperatureContainer> ibuttonDevices = new ArrayList<IbuttonTemperatureContainer>();
+        ibuttonDevices = ibutton.getTemperatureContainer();
+
+        for(int i=0;i<ibuttonDevices.size();i++){
+            System.out.println(ibuttonDevices.get(i).toString());
+        }   
+    }
+}

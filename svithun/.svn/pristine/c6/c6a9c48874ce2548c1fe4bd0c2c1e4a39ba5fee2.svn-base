@@ -1,0 +1,31 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package Gnuplot;
+
+import com.panayotis.gnuplot.JavaPlot;
+import com.panayotis.gnuplot.swing.JPlot;
+import com.panayotis.gnuplot.terminal.GNUPlotTerminal;
+import com.panayotis.gnuplot.terminal.ImageTerminal;
+
+/**
+ *
+ * @author Baardsen
+ */
+public class Main {
+    public static void main(String [] args){
+        JavaPlot jp = new JavaPlot("K:\\GNUPLOT\\bin\\pgnuplot.exe");
+        GNUPlotTerminal terminal = new ImageTerminal();
+        
+        jp.setTerminal(terminal);
+        
+        jp.setTitle("Test graph");
+        jp.addPlot("sin (x)");
+
+        jp.plot();
+        
+        
+    }
+}

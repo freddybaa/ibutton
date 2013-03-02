@@ -1,0 +1,142 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package ibutton_;
+import java.util.*;
+import com.dalsemi.onewire.*;
+import com.dalsemi.onewire.adapter.*;
+import com.dalsemi.onewire.container.*;
+import java.util.ArrayList;
+/**
+ *
+ * @author Baardsen
+ */
+public class Ibutton {
+
+
+    private ArrayList<IbuttonTemperatureContainer> tempDeviceContainer = new ArrayList<IbuttonTemperatureContainer>();
+    private ArrayList<IbuttonHumidityContainer> humDeviceContainer = new ArrayList<IbuttonHumidityContainer>();
+
+    public Ibutton(){
+        this.getDevices();
+    }
+    /**
+     * Method to get the devices
+     * @return an arraylist of all the devices
+     */
+    public ArrayList<IbuttonTemperatureContainer> getTemperatureContainer(){
+        return this.tempDeviceContainer;
+    }
+    public ArrayList<IbuttonHumidityContainer> getHumidityContainer(){
+        return this.humDeviceContainer;
+    }
+    /**
+     * Method to get all the devices from the usb 1-wire usb dongle
+     */
+    private void getDevices(){
+        // enumerate through each of the adapter classes
+      for (Enumeration adapter_enum = OneWireAccessProvider.enumerateAllAdapters();
+              adapter_enum.hasMoreElements(); )
+      {
+
+         // get the next adapter DSPortAdapter
+         DSPortAdapter adapter = ( DSPortAdapter ) adapter_enum.nextElement();
+
+         // get the port names we can use and try to open, test and close each
+         for (Enumeration port_name_enum = adapter.getPortNames();
+                 port_name_enum.hasMoreElements(); )
+         {
+
+            // get the next packet
+            String port_name = ( String ) port_name_enum.nextElement();
+
+            try
+            {
+
+               // select the port
+               adapter.selectPort(port_name);
+
+               // verify there is an adaptered detected
+               if (adapter.adapterDetected())
+               {
+                  // added 8/29/2001 by SH
+                  adapter.beginExclusive(true);
+
+                  // clear any previous search restrictions
+                  adapter.setSearchAllDevices();
+                  adapter.targetAllFamilies();
+
+                  boolean isTemperature                = false;
+                  TemperatureContainer tc              = null;
+                  boolean isHumidity                   = false;
+                  HumidityContainer    hc              = null;
+
+                  // enumerate through all the iButtons found
+                  for (Enumeration ibutton_enum = adapter.getAllDeviceContainers();
+                          ibutton_enum.hasMoreElements(); )
+                  {
+
+                     // get the next ibutton
+                     OneWireContainer ibutton =
+                        ( OneWireContainer ) ibutton_enum.nextElement();
+                     
+
+                     OneWireContainer owc = adapter.getDeviceContainer();
+                     
+                     //default containers for temperature and humidity
+
+                     try{
+
+                         tc              = ( TemperatureContainer ) owc;
+                         isTemperature   = true;
+                     }catch(Exception e){
+                         isTemperature   = false;
+                         tc              = null;
+                     }
+                     //trying to check wether it is a Temperature container or humidity and making a new container for each of the types.
+                     try{
+                        hc               = ( HumidityContainer ) owc;
+                        isHumidity       = true;
+                     }catch(Exception e){
+                        isHumidity       = false;
+                        hc               = null;
+                     }
+                     
+                     if(isTemperature){
+                         
+                         this.tempDeviceContainer.add(new IbuttonTemperatureContainer(adapter,
+                                                                        port_name,
+                                                                        ibutton.getAlternateNames(),
+                                                                        ibutton.getAddressAsString(),
+                                                                        ibutton.getName(),
+                                                                        tc));
+
+                     }else if(isHumidity){
+                       
+                        this.humDeviceContainer.add(new IbuttonHumidityContainer(adapter,
+                                                                     port_name,
+                                                                     ibutton.getAlternateNames(),
+                                                                     ibutton.getAddressAsString(),
+                                                                     ibutton.getName(),
+                                                                     hc));
+                     }else{
+                         //do something
+                     }
+                  }
+
+                  // added 8/29/2001 by SH
+                  adapter.endExclusive();
+               }
+
+               // free this port
+               adapter.freePort();
+            }
+            catch (Exception e){}
+            
+         }
+      }
+   }
+
+}

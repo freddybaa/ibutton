@@ -1,0 +1,85 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package GUI;
+
+import Ibutton.DeviceHandler.Hygrochron;
+import Ibutton.DeviceHandler.Thermochron;
+import com.dalsemi.onewire.OneWireException;
+import com.dalsemi.onewire.application.tag.Thermal;
+import java.awt.Container;
+import java.awt.GridLayout;
+import java.awt.Image;
+import java.awt.image.ImageProducer;
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+
+/**
+ *
+ * @author Baardsen
+ */
+public class Viewer extends JFrame {
+    private Hygrochron hygrochron;
+    private Thermochron thermochron;
+    private Container container;
+    private Boolean HYGROCHRON = false;
+    private int w = 400;
+    private int h = 300;
+
+    /**
+     * Taking a device as parameter and setting up device and gui
+     * @param owc - OneWirecontainer
+     * @throws OneWireException
+     * @throws Exception
+     */
+    /**
+     *
+     * @param owc
+     * @throws OneWireException
+     * @throws Exception
+     */
+    public Viewer(Object owc) throws OneWireException, Exception{
+        try{
+            hygrochron = (Hygrochron) owc;
+            HYGROCHRON = true;
+        }catch(Exception e){
+            thermochron = (Thermochron) owc;
+        }
+        
+        container = getContentPane();
+        container.setLayout(new GridLayout(5,2));
+        if(HYGROCHRON){
+            setTitle(hygrochron.getAlternativeName() + " mission results.");
+        }else{
+            setTitle(thermochron.getAlternativeName() + " mission results.");
+        }
+        setSize(w, h);
+        setVisible(true);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+
+        JLabel jta = new JLabel();
+        JLabel img;
+        if(HYGROCHRON){
+            hygrochron.readHumidity();
+            hygrochron.readTemperatures();
+            hygrochron.generateGraph();
+            jta.setText(hygrochron.getMissionInformation());
+            container.add(jta);
+            new DisplayImage(hygrochron.HUMIDITY_GRAPH_NAME);
+            new DisplayImage(hygrochron.TEMPERATURE_GRAPH_NAME);
+            new DisplayImage(hygrochron.TEMP_HUM_GRAPH_NAME);
+        }else{
+            thermochron.readTemperatures();
+            thermochron.generateGraph();
+            jta.setText(thermochron.getMissionInformation());
+            container.add(jta);
+            new DisplayImage(thermochron.TEMPERATURE_GRAPH_NAME);
+        }
+    }
+}

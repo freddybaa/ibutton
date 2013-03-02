@@ -1,0 +1,80 @@
+
+package ibutton_;
+
+import com.dalsemi.onewire.OneWireException;
+import com.dalsemi.onewire.adapter.DSPortAdapter;
+import com.dalsemi.onewire.adapter.OneWireIOException;
+import com.dalsemi.onewire.container.*;
+import java.util.ArrayList;
+
+/**
+ * Class to handle the Temperature device
+ * @author Baardsen
+ */
+public class IbuttonTemperatureContainer extends IbuttonContainer implements IbuttonContainerImplement{
+   
+    private ArrayList<Double> temperatures = new ArrayList<Double>();
+    public IbuttonTemperatureContainer(DSPortAdapter adapter, String port_name, String alternateNames, String description, String name, TemperatureContainer tc){
+         super(adapter, port_name,alternateNames, description, name, tc);
+         this.readTemperatureFromDevice();
+
+    }
+    //get methods
+    @Override
+    public String getPortName(){
+        return super.getPortName();
+    }
+    @Override
+    public DSPortAdapter getAdapter() {
+        return super.getAdapter();
+    }
+    @Override
+    public String getAlternateName() {
+        return super.getAlternateName();
+    }
+    @Override
+    public String getDescription() {
+        return super.getDescription();
+    }
+    @Override
+    public String getName() {
+        return super.getName();
+    }
+    @Override 
+    public TemperatureContainer getTemperatureContainer(){
+        return super.getTemperatureContainer();
+    }
+    @Override
+    public String toString(){
+        return super.toString();
+    }
+    public ArrayList<Double> getTemperatures(){
+        
+        return this.temperatures;
+    }
+
+    /**
+     * Reading the temperatures from the device
+     */
+    private void readTemperatureFromDevice(){
+        
+        try{
+
+           TemperatureContainer tc = super.getTemperatureContainer();
+           byte [] state = tc.readDevice();
+           
+           tc.doTemperatureConvert(state);
+
+           state = tc.readDevice();
+
+           this.temperatures.add(tc.getTemperature(state));
+            
+           
+        }catch(OneWireIOException io){
+
+        }catch(OneWireException e){
+
+        }
+        
+    }
+}
